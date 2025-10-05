@@ -1,0 +1,78 @@
+<ng-container [ngSwitch]="type">
+  
+  <ng-container *ngSwitchCase="'checkbox'">
+    <input
+      type="checkbox"
+      [id]="inputId"
+      [class]="checkboxRadioClasses + ' ' + className"
+      [checked]="value"
+      [disabled]="disabled"
+      (change)="onValueChange($event)"
+      [attr.required]="required ? true : null"
+    />
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'radio'">
+    <input
+      type="radio"
+      [id]="inputId"
+      [class]="checkboxRadioClasses + ' rounded-full ' + className"
+      [value]="value"
+      [disabled]="disabled"
+      (change)="onValueChange($event)"
+      [attr.required]="required ? true : null"
+      />
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'textarea'">
+    <div class="space-y-2">
+      <label *ngIf="label"
+        [for]="inputId"
+        [class]="'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ' + (error ? 'text-destructive' : 'text-foreground')"
+      >
+        {{ label }}
+        <span *ngIf="required" class="text-destructive ml-1">*</span>
+      </label>
+
+      <textarea
+        [id]="inputId"
+        [class]="finalInputClasses"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        [value]="value"
+        (input)="onValueChange($event)"
+        [attr.required]="required ? true : null"
+      ></textarea>
+
+      <p *ngIf="description && !error" class="text-sm text-muted-foreground">{{ description }}</p>
+      <p *ngIf="error" class="text-sm text-destructive">{{ error }}</p>
+    </div>
+  </ng-container>
+
+  <ng-container *ngSwitchDefault>
+    <div class="space-y-2">
+      <label *ngIf="label"
+        [for]="inputId"
+        [class]="'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ' + (error ? 'text-destructive' : 'text-foreground')"
+      >
+        {{ label }}
+        <span *ngIf="required" class="text-destructive ml-1">*</span>
+      </label>
+
+      <input
+        [type]="type"
+        [id]="inputId"
+        [class]="finalInputClasses"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        [value]="value"
+        (input)="onValueChange($event)"
+        [attr.required]="required ? true : null"
+      />
+
+      <p *ngIf="description && !error" class="text-sm text-muted-foreground">{{ description }}</p>
+      <p *ngIf="error" class="text-sm text-destructive">{{ error }}</p>
+    </div>
+  </ng-container>
+
+</ng-container>

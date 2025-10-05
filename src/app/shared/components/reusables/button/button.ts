@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ArrowDown, ArrowLeft, ArrowRight, Check, Eye, EyeOff, Filter, Grid3X3, Home, Loader2, LogIn, LucideAngularModule, RefreshCw, Search, Send, ShieldCheck, UserPlus, X } from 'lucide-angular';
+import { ArrowDown, ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, Eye, EyeOff, Filter, Grid3X3, Home, Loader2, LogIn, LucideAngularModule, RefreshCw, Search, Send, ShieldCheck, UserPlus, X } from 'lucide-angular';
 
 @Component({
   selector: 'app-button',
@@ -24,23 +24,11 @@ export class Button {
 
   @Output() btnClick = new EventEmitter<MouseEvent>();
 
-  readonly icons = { 
-    LogIn, 
-    UserPlus, 
-    ArrowDown, 
-    Loader2, 
-    ShieldCheck, 
-    RefreshCw, 
-    ArrowLeft,
-    ArrowRight,
-    Home,
-    Grid3X3,
-    Search,
-    Filter,
-    X,
-    Check,
-    Eye,
-    EyeOff,
+  readonly icons = {
+    LogIn,
+    Loader2,
+    ChevronRight,
+    ChevronLeft,
     Send
   };
 

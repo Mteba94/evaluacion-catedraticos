@@ -1,0 +1,260 @@
+<section id="start-evaluation" class="py-20 bg-background">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-4">
+        Formulario de Evaluación Interactivo
+      </h2>
+      <p class="text-xl text-muted-foreground">
+        Experimenta nuestro sistema de evaluación sin enviar datos reales
+      </p>
+    </div>
+
+    <ng-container *ngIf="showSuccess">
+      <div class="bg-accent/5 border border-accent/20 rounded-2xl p-12 text-center">
+        <div class="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+           <lucide-icon [img]="icons.checkCircle" [size]="16" class="text-muted-foreground"></lucide-icon>
+        </div>
+        <h3 class="text-2xl font-bold text-foreground mb-4">
+          ¡Evaluación Enviada Exitosamente!
+        </h3>
+        <p class="text-muted-foreground mb-6">
+          Tu feedback anónimo ha sido registrado de forma segura. 
+          Tu identidad permanece completamente protegida.
+        </p>
+        <div class="flex items-center justify-center space-x-6 text-sm text-muted-foreground">
+          <div class="flex items-center space-x-2">
+            <lucide-icon [img]="icons.shield" [size]="16" class="text-muted-foreground"></lucide-icon>
+            <span>100% Anónimo</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <lucide-icon [img]="icons.lock" [size]="16" class="text-muted-foreground"></lucide-icon>
+            <span>Datos Encriptados</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <lucide-icon [img]="icons.eye" [size]="16" class="text-muted-foreground"></lucide-icon>
+            <span>Sin Rastreo</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!showSuccess">
+      <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm font-medium text-foreground">{{ getStepTitle() }}</span>
+          <span class="text-sm text-muted-foreground">Paso {{ currentStep + 1 }} de 4</span>
+        </div>
+        <div class="w-full bg-border rounded-full h-2">
+          <div 
+            class="bg-primary h-2 rounded-full transition-all duration-300"
+            [style.width.%]="((currentStep + 1) / 4) * 100"
+          ></div>
+        </div>
+      </div>
+
+      <div class="bg-card rounded-2xl shadow-evaluation border border-border p-8">
+        
+        <div *ngIf="currentStep === 0" class="space-y-6">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+              <lucide-icon [img]="icons.user" [size]="20" class="var(--color-primary)"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-foreground">Seleccionar Profesor</h3>
+              <p class="text-sm text-muted-foreground">Elige el profesor que deseas evaluar</p>
+            </div>
+          </div>
+
+          <app-select
+            label="Profesor y Curso"
+            placeholder="Selecciona un profesor..."
+            [options]="professors"
+            [(ngModel)]="selectedProfessor"
+            class="mb-4"
+          ></app-select>
+
+          <div *ngIf="selectedProfessor" class="bg-primary/5 border border-primary/20 rounded-lg p-4">
+            <div class="flex items-center space-x-3">
+              <lucide-icon [img]="icons.info" [size]="16" color="var(--color-primary)"></lucide-icon>
+              <span class="text-sm text-foreground">
+                Tu evaluación será completamente anónima. El profesor no podrá identificarte.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="currentStep === 1" class="space-y-8">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-warning/20 rounded-lg flex items-center justify-center">
+              <lucide-icon [img]="icons.star" [size]="20" color="var(--color-warning)"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-foreground">Evaluación por Categorías</h3>
+              <p class="text-sm text-muted-foreground">Califica cada aspecto del 1 al 5</p>
+            </div>
+          </div>
+
+          <div *ngFor="let question of questions" class="space-y-3">
+            <div>
+              <h4 class="font-medium text-foreground">{{ question.title }}</h4>
+              <p class="text-sm text-muted-foreground">{{ question.description }}</p>
+            </div>
+            <div class="flex items-center space-x-4">
+              <div class="flex space-x-1">
+                <button
+                  *ngFor="let star of [1, 2, 3, 4, 5]"
+                  (click)="handleRatingChange(question.id, star)"
+                  class="transition-all duration-200 hover:scale-110"
+                >
+                  <!-- <app-icon
+                    name="Star"
+                    [size]="28"
+                    [color]="star <= ratings[question.id] ? 'var(--color-warning)' : 'var(--color-border)'"
+                    [class]="star <= ratings[question.id] ? 'fill-current' : ''"
+                    class="hover:fill-current hover:text-warning"
+                  /> -->
+                  <lucide-icon [img]="icons.star" [size]="28" [color]="star <= ratings[question.id] ? 'var(--color-warning)' : 'var(--color-border)'" [class]="star <= ratings[question.id] ? 'fill-current' : ''" class="hover:fill-current hover:text-warning"></lucide-icon>
+                </button>
+              </div>
+
+              <span *ngIf="ratings[question.id] > 0" class="text-sm font-medium text-primary">
+                {{ ratings[question.id] }}/5
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="currentStep === 2" class="space-y-6">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
+              <lucide-icon [img]="icons.messageSquare" [size]="20" color="var(--color-accent)"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-foreground">Comentarios Adicionales</h3>
+              <p class="text-sm text-muted-foreground">Comparte tu experiencia detallada (mínimo 50 caracteres)</p>
+            </div>
+          </div>
+
+          <app-input
+            type="textarea"
+            label="Comentarios"
+            placeholder="Describe tu experiencia con este profesor. Sé específico sobre aspectos positivos y áreas de mejora..."
+            [(ngModel)]="comments"
+            minLength="50"
+            class="min-h-32"
+          ></app-input>
+
+          <div class="flex items-center justify-between text-sm">
+            <span [class.text-accent]="comments.length >= 50" [class.text-muted-foreground]="comments.length < 50">
+              {{ comments.length }}/50 caracteres mínimos
+            </span>
+            <span class="text-muted-foreground">
+              {{ comments.length }}/500 caracteres
+            </span>
+          </div>
+        </div>
+
+        <div *ngIf="currentStep === 3" class="space-y-6">
+          <div class="flex items-center space-x-3 mb-6">
+            <div class="w-10 h-10 bg-success/20 rounded-lg flex items-center justify-center">
+              <lucide-icon [img]="icons.checkCircle" [size]="20" class="var(--color-success)"></lucide-icon>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-foreground">Confirmar Envío</h3>
+              <p class="text-sm text-muted-foreground">Revisa tu evaluación antes de enviar</p>
+            </div>
+          </div>
+
+          <div class="bg-muted rounded-lg p-6 space-y-4">
+            <div>
+              <h4 class="font-medium text-foreground mb-2">Profesor Seleccionado:</h4>
+              <p class="text-sm text-muted-foreground">
+                {{ selectedProfessorDetails?.label }}
+              </p>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-foreground mb-2">Calificaciones:</h4>
+              <div class="grid grid-cols-2 gap-4">
+                <div *ngFor="let question of questions" class="flex justify-between">
+                  <span class="text-sm text-muted-foreground">{{ question.title }}:</span>
+                  <div class="flex space-x-1">
+                    <!-- <app-icon 
+                      *ngFor="let _ of [].constructor(ratings[question.id])" 
+                      name="Star" [size]="12" 
+                      color="var(--color-warning)" 
+                      class="fill-current"
+                    /> -->
+                    <lucide-icon 
+                      *ngFor="let _ of [].constructor(5 - ratings[question.id])" 
+                      [img]="icons.star" 
+                      [size]="12" 
+                      color="var(--color-warning)" 
+                      class="fill-current"
+                    ></lucide-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-medium text-foreground mb-2">Comentarios:</h4>
+              <p class="text-sm text-muted-foreground bg-background p-3 rounded border">
+                {{ comments.substring(0, 100) }}...
+              </p>
+            </div>
+          </div>
+          
+          <div class="bg-accent/5 border border-accent/20 rounded-lg p-4">
+            <div class="flex items-start space-x-3">
+              <lucide-icon [img]="icons.shield" [size]="16" color="var(--color-accent)" class="mt-0.5"></lucide-icon>
+              <div class="text-sm">
+                <p class="font-medium text-foreground mb-1">Garantía de Anonimato</p>
+                <p class="text-muted-foreground">
+                  Esta evaluación es completamente anónima. No se almacena información que pueda identificarte.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between pt-8 border-t border-border">
+          <app-button
+            variant="outline"
+            (click)="handlePrevious()"
+            [disabled]="currentStep === 0"
+            iconName="ChevronLeft"
+            iconPosition="left"
+          >
+            <span>Anterior</span>
+          </app-button>
+
+          <ng-container *ngIf="currentStep < 3">
+            <app-button
+              variant="default"
+              (click)="handleNext()"
+              [disabled]="!isStepComplete()"
+              iconName="ChevronRight"
+              iconPosition="right"
+            >
+              <span>Siguiente</span>
+            </app-button>
+          </ng-container>
+
+          <ng-container *ngIf="currentStep === 3">
+            <app-button
+              variant="default"
+              (click)="handleSubmit()"
+              iconName="Send"
+              iconPosition="right"
+              className="bg-accent hover:bg-accent/90"
+            >
+              <span>Enviar Evaluación</span>
+            </app-button>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</section>
