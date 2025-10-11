@@ -104,7 +104,7 @@
               <div class="flex space-x-1">
                 <button
                   *ngFor="let star of [1, 2, 3, 4, 5]"
-                  (click)="handleRatingChange(question.id, star)"
+                  (click)="handleRatingChange(question.key, star)"
                   class="transition-all duration-200 hover:scale-110"
                 >
                   <!-- <app-icon
@@ -114,12 +114,12 @@
                     [class]="star <= ratings[question.id] ? 'fill-current' : ''"
                     class="hover:fill-current hover:text-warning"
                   /> -->
-                  <lucide-icon [img]="icons.star" [size]="28" [color]="star <= ratings[question.id] ? 'var(--color-warning)' : 'var(--color-border)'" [class]="star <= ratings[question.id] ? 'fill-current' : ''" class="hover:fill-current hover:text-warning"></lucide-icon>
+                  <lucide-icon [img]="icons.star" [size]="28" [color]="star <= ratings[question.key] ? 'var(--color-warning)' : 'var(--color-border)'" [class]="star <= ratings[question.key] ? 'fill-current' : ''" class="hover:fill-current hover:text-warning"></lucide-icon>
                 </button>
               </div>
 
-              <span *ngIf="ratings[question.id] > 0" class="text-sm font-medium text-primary">
-                {{ ratings[question.id] }}/5
+              <span *ngIf="ratings[question.key] > 0" class="text-sm font-medium text-primary">
+                {{ ratings[question.key] }}/5
               </span>
             </div>
           </div>
@@ -132,7 +132,7 @@
             </div>
             <div>
               <h3 class="text-xl font-semibold text-foreground">Comentarios Adicionales</h3>
-              <p class="text-sm text-muted-foreground">Comparte tu experiencia detallada (mínimo 50 caracteres)</p>
+              <p class="text-sm text-muted-foreground">Comparte tu experiencia detallada (mínimo 10 caracteres)</p>
             </div>
           </div>
 
@@ -141,13 +141,13 @@
             label="Comentarios"
             placeholder="Describe tu experiencia con este profesor. Sé específico sobre aspectos positivos y áreas de mejora..."
             [(ngModel)]="comments"
-            minLength="50"
+            minLength="10"
             class="min-h-32"
           ></app-input>
 
           <div class="flex items-center justify-between text-sm">
-            <span [class.text-accent]="comments.length >= 50" [class.text-muted-foreground]="comments.length < 50">
-              {{ comments.length }}/50 caracteres mínimos
+            <span [class.text-accent]="comments.length >= 10" [class.text-muted-foreground]="comments.length < 10">
+              {{ comments.length }}/10 caracteres mínimos
             </span>
             <span class="text-muted-foreground">
               {{ comments.length }}/500 caracteres
@@ -187,7 +187,7 @@
                       class="fill-current"
                     /> -->
                     <lucide-icon 
-                      *ngFor="let _ of [].constructor(5 - ratings[question.id])" 
+                      *ngFor="let _ of [].constructor(ratings[question.key])" 
                       [img]="icons.star" 
                       [size]="12" 
                       color="var(--color-warning)" 
@@ -249,6 +249,7 @@
               iconName="Send"
               iconPosition="right"
               className="bg-accent hover:bg-accent/90"
+              [loading]="isLoading"
             >
               <span>Enviar Evaluación</span>
             </app-button>
@@ -256,5 +257,27 @@
         </div>
       </div>
     </ng-container>
+
+    <ng-container *ngIf="showError">
+      <div class="bg-red-50 border border-red-200 rounded-2xl p-12 text-center">
+        <div class="w-20 h-20 bg-red-200 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+          <lucide-icon [img]="icons.lock" [size]="16" class="text-red-600"></lucide-icon>
+        </div>
+        <h3 class="text-2xl font-bold text-red-600 mb-4">
+          ¡Ocurrió un Error!
+        </h3>
+        <p class="text-red-600 mb-6">
+          {{ errorMessage }}
+        </p>
+        <app-button
+          variant="default"
+          (click)="showError = false; currentStep = 0"
+          class="bg-red-600 hover:bg-red-700 text-white"
+        >
+          <span>Intentar de Nuevo</span>
+        </app-button>
+      </div>
+    </ng-container>
+
   </div>
 </section>

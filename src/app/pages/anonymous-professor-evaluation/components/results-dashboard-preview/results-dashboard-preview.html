@@ -1,1 +1,285 @@
-<p>results-dashboard-preview works!</p>
+<section id="results-preview" class="py-20 bg-muted/30">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-4">
+        Vista Previa del Dashboard de Resultados
+      </h2>
+      <p class="text-xl text-muted-foreground max-w-3xl mx-auto">
+        Descubre cómo se visualizan los datos agregados manteniendo el anonimato completo
+      </p>
+    </div>
+
+    <div class="flex justify-center mb-8">
+      <div class="bg-card rounded-lg p-1 border border-border">
+        <button
+          (click)="setViewMode('student')"
+          [ngClass]="{
+            'bg-primary text-white shadow-sm': viewMode === 'student',
+            'text-muted-foreground hover:text-foreground': viewMode !== 'student'
+          }"
+          class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
+        >
+          Vista Estudiante
+        </button>
+        <button
+          (click)="setViewMode('admin')"
+          [ngClass]="{
+            'bg-primary text-white shadow-sm': viewMode === 'admin',
+            'text-muted-foreground hover:text-foreground': viewMode !== 'admin'
+          }"
+          class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200"
+        >
+          Vista Administrador
+        </button>
+      </div>
+    </div>
+
+    <div class="flex justify-center mb-8">
+      <div class="flex space-x-2">
+        <button
+          *ngFor="let profKey of professorsData | keyvalue"
+          (click)="setSelectedProfessor(profKey.key)"
+          [ngClass]="{
+            'bg-primary text-white': selectedProfessor === profKey.key,
+            'bg-card text-foreground border border-border hover:bg-primary/5': selectedProfessor !== profKey.key
+          }"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+        >
+          {{ profKey.value.name.split(' ')[1] }}
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-card rounded-2xl shadow-evaluation border border-border overflow-hidden">
+      <div class="bg-primary/5 border-b border-border p-6">
+        <div class="flex items-center space-x-4">
+          <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20">
+            <img 
+              [src]="currentData?.avatar" 
+              [alt]="currentData?.name"
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold text-foreground">{{ currentData?.name }}</h3>
+            <p class="text-muted-foreground">{{ currentData?.course }}</p>
+            <div class="flex items-center space-x-4 mt-2">
+              <div class="flex items-center space-x-2">
+                <lucide-icon [img]="icons.users" [size]="16" color="var(--color-primary)"></lucide-icon>
+                <span class="text-sm text-foreground">{{ animatedStats().totalResponses }} respuestas</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <lucide-icon [img]="icons.trendingUp" [size]="16" color="var(--color-accent)"></lucide-icon>
+                <span class="text-sm text-foreground">{{ animatedStats().completionRate }}% participación</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <lucide-icon [img]="icons.smile" [size]="16" color="var(--color-accent)"></lucide-icon>
+                <span class="text-sm text-foreground">{{ animatedStats().positivePercentage }}% positivo</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <lucide-icon [img]="icons.angry" [size]="16" color="var(--color-warning)"></lucide-icon>
+                <span class="text-sm text-foreground">{{ animatedStats().negativePercentage }}% negativo</span>
+              </div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-3xl font-bold text-primary">{{ animatedStats().averageRating }}</div>
+            <div class="text-sm text-muted-foreground">Promedio General</div>
+            
+            <div class="flex items-center space-x-1 justify-end">
+              <!-- <app-icon
+                *ngFor="let star of renderStarRating(currentData.stats.averageRating)"
+                name="Star"
+                [size]="16"
+                [color]="star.filled ? 'var(--color-warning)' : 'var(--color-border)'"
+                [class]="star.filled ? 'fill-current' : ''"
+              /> -->
+              <lucide-icon *ngFor="let star of renderStarRating(currentData?.stats?.averageRating ?? 0)" [img]="icons.star" [size]="16" 
+                [color]="star.filled ? 'var(--color-warning)' : 'var(--color-border)'" 
+                [class]="star.filled ? 'fill-current' : ''"
+              ></lucide-icon>
+              <span class="text-sm font-medium text-foreground ml-2">{{ currentData?.stats?.averageRating }}</span>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <div *ngIf="viewMode === 'student'" class="space-y-8">
+          <div>
+            <h4 class="text-lg font-semibold text-foreground mb-4">Calificaciones por Categoría</h4>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div *ngFor="let rating of currentData?.ratings | keyvalue" class="space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm font-medium text-foreground">
+                    {{ categoryNames[rating.key] }}
+                  </span>
+                  <span class="text-sm font-bold text-primary">{{ rating.value }}</span>
+                </div>
+                <div class="w-full bg-border rounded-full h-2">
+                  <div 
+                    class="h-2 rounded-full transition-all duration-1000"
+                    [style.width]="getProgressBarWidth(rating.value, 5)"
+                    [style.backgroundColor]="'var(--color-primary)'"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-lg font-semibold text-foreground mb-4">Comentarios Recientes</h4>
+            <div class="space-y-3">
+              <div *ngFor="let comment of currentData?.recentComments" class="bg-muted/50 rounded-lg p-4 border border-border">
+                <div class="flex items-start space-x-3">
+                  <div class="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <lucide-icon [img]="icons.messageSquare" [size]="14" [color]="'var(--color-primary)'" />
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm text-foreground">{{ comment }}</p>
+                    <div class="flex items-center space-x-2 mt-2 text-xs text-muted-foreground">
+                      <lucide-angular [img]="icons.shield" [size]="12" color="var(--color-success)" />
+                      <span>Comentario anónimo verificado</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="viewMode === 'admin'" class="space-y-8">
+          <div class="grid md:grid-cols-4 gap-6">
+            <div class="bg-primary/5 rounded-lg p-4 border border-primary/20">
+              <div class="flex items-center space-x-3">
+                <lucide-angular [img]="icons.users" [size]="20" color="var(--color-primary)" />
+                <div>
+                  <div class="text-2xl font-bold text-foreground">{{ animatedStats().totalResponses }}</div>
+                  <div class="text-xs text-muted-foreground">Total Respuestas</div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-accent/5 rounded-lg p-4 border border-accent/20">
+              <div class="flex items-center space-x-3">
+                <lucide-angular [img]="icons.star" [size]="20" color="var(--color-accent)" />
+                <div>
+                  <div class="text-2xl font-bold text-foreground">{{ animatedStats().averageRating }}</div>
+                  <div class="text-xs text-muted-foreground">Promedio General</div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-success/5 rounded-lg p-4 border border-success/20">
+              <div class="flex items-center space-x-3">
+                <lucide-angular [img]="icons.trendingUp" [size]="20" color="var(--color-success)" />
+                <div>
+                  <div class="text-2xl font-bold text-foreground">{{ animatedStats().completionRate }}%</div>
+                  <div class="text-xs text-muted-foreground">Tasa Participación</div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-secondary/5 rounded-lg p-4 border border-secondary/20">
+              <div class="flex items-center space-x-3">
+                <lucide-angular [img]="icons.barChart3" [size]="20" color="var(--color-secondary)" />
+                <div>
+                  <div class="text-2xl font-bold text-foreground">{{ currentData?.stats?.semesterAverage }}</div>
+                  <div class="text-xs text-muted-foreground">Promedio Semestre</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-8">
+            <div>
+              <h4 class="text-lg font-semibold text-foreground mb-4">Análisis Detallado</h4>
+              <div class="space-y-4">
+                <div *ngFor="let rating of currentData?.ratings | keyvalue" class="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <span class="text-sm font-medium text-foreground">
+                    {{ adminCategoryNames[rating.key] }}
+                  </span>
+                  <div class="flex items-center space-x-3">
+                    
+                    <div class="flex items-center space-x-1">
+                      <lucide-angular
+                        *ngFor="let star of renderStarRating(rating.value)"
+                        [img]="icons.star"
+                        [size]="16"
+                        [color]="star.filled ? 'var(--color-warning)' : 'var(--color-border)'"
+                        [class]="star.filled ? 'fill-current' : ''"
+                      />
+
+                      <span class="text-sm font-medium text-foreground ml-2">{{ rating.value }}</span>
+                    </div>
+
+                    <span class="text-xs text-muted-foreground w-12">
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-lg font-semibold text-foreground mb-4">Comparación Semestral</h4>
+              <div *ngIf="currentData?.stats" class="bg-muted/30 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="text-sm font-medium text-foreground">Rendimiento vs Promedio</span>
+                  @if (currentData) {
+                    <span [ngClass]="{
+                    'text-accent': currentData.stats.averageRating > currentData.stats.semesterAverage,
+                    'text-warning': currentData.stats.averageRating <= currentData.stats.semesterAverage
+                  }" class="text-sm font-bold">
+                    {{ currentData.stats.averageRating > currentData.stats.semesterAverage ? '+' : '' }}
+                    {{ (currentData.stats.averageRating - currentData.stats.semesterAverage) | number:'1.1-1' }}
+                  </span>
+                  }
+                </div>
+                
+                <div class="space-y-3">
+                  <div>
+                    <div class="flex justify-between text-xs mb-1">
+                      <span class="text-muted-foreground">Este Profesor</span>
+                      <span class="font-medium">{{ currentData?.stats?.averageRating }}</span>
+                    </div>
+                    <div class="w-full bg-border rounded-full h-2">
+                      <div 
+                        class="h-2 rounded-full transition-all duration-1000"
+                        [style.width]="getProgressBarWidth(currentData?.stats?.averageRating ?? 0, 5)"
+                        [style.backgroundColor]="'var(--color-primary)'"
+                      ></div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div class="flex justify-between text-xs mb-1">
+                      <span class="text-muted-foreground">Promedio Semestre</span>
+                      <span class="font-medium">{{ currentData?.stats?.semesterAverage }}</span>
+                    </div>
+                    <div class="w-full bg-border rounded-full h-2">
+                      <div 
+                        class="h-2 rounded-full transition-all duration-1000"
+                        [style.width]="getProgressBarWidth(currentData?.stats?.semesterAverage ?? 0, 5)"
+                        [style.backgroundColor]="'var(--color-muted-foreground)'"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 bg-accent/5 border border-accent/20 rounded-lg p-6">
+      <div class="flex items-start space-x-3">
+        <lucide-angular [img]="icons.shield" [size]="20" color="var(--color-accent)" class="mt-0.5" />
+        <div>
+          <h4 class="font-semibold text-foreground mb-2">Protección de Privacidad</h4>
+          <p class="text-sm text-muted-foreground">
+            Todos los datos mostrados son agregados y anónimos. No se almacena información que pueda 
+            identificar a estudiantes individuales. Los comentarios pasan por un proceso de anonimización 
+            antes de ser mostrados.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

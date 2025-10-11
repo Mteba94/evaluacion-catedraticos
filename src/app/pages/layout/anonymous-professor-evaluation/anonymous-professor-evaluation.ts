@@ -1,10 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { InteractiveEvaluationForm } from '../../anonymous-professor-evaluation/components/interactive-evaluation-form/interactive-evaluation-form';
+import { ResultsDashboardPreview } from '../../anonymous-professor-evaluation/components/results-dashboard-preview/results-dashboard-preview';
 
 @Component({
   selector: 'app-anonymous-professor-evaluation',
   imports: [
-    InteractiveEvaluationForm
+    InteractiveEvaluationForm,
+    ResultsDashboardPreview
   ],
   templateUrl: './anonymous-professor-evaluation.html',
   styleUrl: './anonymous-professor-evaluation.css'
